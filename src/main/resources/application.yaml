@@ -1,0 +1,97 @@
+server:
+  port: 8090
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: coltefinanciera-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/**
+            - Header=X-Bank-Code, COLT
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: coltefinancieraCB
+                fallbackUri: forward:/fallback/coltefinanciera
+
+        - id: davivienda-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/**
+            - Header=X-Bank-Code, DAVI
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: daviviendaCB
+                fallbackUri: forward:/fallback/davivienda
+
+        - id: bancolombia-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/**
+            - Header=X-Bank-Code, BCO
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: bancolombiaCB
+                fallbackUri: forward:/fallback/bancolombia
+
+        # Fallbacks
+        - id: fallback-coltefinanciera
+          uri: http://localhost:8090
+          predicates:
+            - Path=/fallback/coltefinanciera
+          filters:
+            - SetStatus=503
+            - RewritePath=/fallback/coltefinanciera, /fallback
+
+        - id: fallback-davivienda
+          uri: http://localhost:8090
+          predicates:
+            - Path=/fallback/davivienda
+          filters:
+            - SetStatus=503
+            - RewritePath=/fallback/davivienda, /fallback
+
+        - id: fallback-bancolombia
+          uri: http://localhost:8090
+          predicates:
+            - Path=/fallback/bancolombia
+          filters:
+            - SetStatus=503
+            - RewritePath=/fallback/bancolombia, /fallback
+
+      discovery:
+        locator:
+          enabled: false
+
+    inetutils:
+      ignored-interfaces:
+        - docker.*
+        - veth.*
+      use-only-site-local-interfaces: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      coltefinancieraCB:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+      daviviendaCB:
+        registerHealthIndicator: true
+      bancolombiaCB:
+        registerHealthIndicator: true

@@ -1,0 +1,327 @@
+openapi: 3.1.0
+info:
+  title: Golden Contract - Credit Application API
+  description: |
+    Contrato obligatorio para todas las entidades financieras.
+    Basado en FinancialEntityCore v0.1.1.
+    Usa {bankDomain} para apuntar al banco correcto.
+  version: 1.0.0
+  contact:
+    name: Prestek Development Team
+    email: contact@prestek.com
+
+servers:
+  - url: https://{bankDomain}
+    description: Implementación del banco
+    variables:
+      bankDomain:
+        default: api.banco-ejemplo.com
+        description: Dominio del banco integrado (ej. api.bancolombia.com)
+
+tags:
+  - name: Applications
+    description: Gestión de solicitudes de crédito
+  - name: Quotes
+    description: Cotización de créditos
+
+paths:
+  /api/applications:
+    get:
+      tags: [Applications]
+      summary: Obtener todas las solicitudes
+      operationId: getAllApplications
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationDto'
+
+    post:
+      tags: [Applications]
+      summary: Crear nueva solicitud
+      operationId: createApplication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApplicationRequest'
+            example:
+              userId: "USR123"
+              amount: 500000.0
+      responses:
+        '201':
+          description: Creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDto'
+        '400':
+          description: Datos inválidos
+
+  /api/applications/{id}:
+    get:
+      tags: [Applications]
+      summary: Obtener por ID
+      operationId: getApplicationById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          example: 1
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDto'
+        '404':
+          description: No encontrada
+
+    delete:
+      tags: [Applications]
+      summary: Eliminar
+      operationId: deleteApplication
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Eliminada
+        '404':
+          description: No encontrada
+
+  /api/applications/user/{userId}:
+    get:
+      tags: [Applications]
+      summary: Por usuario
+      operationId: getApplicationsByUserId
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationDto'
+
+  /api/applications/status/{status}:
+    get:
+      tags: [Applications]
+      summary: Por estado
+      operationId: getApplicationsByStatus
+      parameters:
+        - name: status
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ApplicationStatus'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationDto'
+
+  /api/applications/{id}/status:
+    patch:
+      tags: [Applications]
+      summary: Actualizar estado
+      operationId: updateApplicationStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/ApplicationStatus'
+                notes:
+                  type: string
+                  nullable: true
+              required: [status]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDto'
+        '400': {}
+        '404': {}
+
+  /api/applications/user/{userId}/count:
+    get:
+      tags: [Applications]
+      summary: Contar por usuario
+      operationId: getApplicationCountByUserId
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    format: int64
+
+  /api/quotes:
+    post:
+      tags: [Quotes]
+      summary: Cotizar
+      operationId: quote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuoteDto'
+
+components:
+  schemas:
+    ApplicationStatus:
+      type: string
+      enum: [PENDING, UNDER_REVIEW, APPROVED, REJECTED, CANCELLED]
+
+    CreateApplicationRequest:
+      type: object
+      required: [userId, amount]
+      properties:
+        userId:
+          type: string
+        amount:
+          type: number
+          format: double
+
+    ApplicationDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        applicationDate:
+          type: string
+          format: date-time
+          readOnly: true
+        reviewDate:
+          type: string
+          format: date-time
+          readOnly: true
+        approvalDate:
+          type: string
+          format: date-time
+          readOnly: true
+        notes:
+          type: string
+        rejectionReason:
+          type: string
+        amount:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        userId:
+          type: string
+        creditOfferId:
+          type: integer
+          format: int64
+        userFullName:
+          type: string
+          readOnly: true
+        creditOfferDescription:
+          type: string
+          readOnly: true
+
+    QuoteRequest:
+      type: object
+      required: [amount, termMonths, score, monthlyIncome, monthlyExpenses]
+      properties:
+        amount:
+          type: integer
+          format: int64
+        termMonths:
+          type: integer
+          format: int32
+        score:
+          type: integer
+          format: int32
+        monthlyIncome:
+          type: integer
+          format: int64
+        monthlyExpenses:
+          type: integer
+          format: int64
+
+    QuoteDto:
+      type: object
+      properties:
+        institution:
+          type: string
+        rateEAmin:
+          type: number
+          format: double
+        rateEAmax:
+          type: number
+          format: double
+        monthlyPaymentMin:
+          type: integer
+          format: int64
+        monthlyPaymentMax:
+          type: integer
+          format: int64
+        feesEstimated:
+          type: integer
+          format: int64
+        aprEAEstimated:
+          type: number
+          format: double
+        validUntil:
+          type: string
