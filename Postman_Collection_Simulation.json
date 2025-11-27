@@ -1,0 +1,266 @@
+{
+  "info": {
+    "name": "Financial Gateway - Simulation API",
+    "description": "API para simulación de créditos con validación de políticas crediticias y comparación entre bancos (Bancolombia, Davivienda, Coltefinanciera) usando n8n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "gateway_url",
+      "value": "http://localhost:8090",
+      "type": "string"
+    },
+    {
+      "key": "n8n_url",
+      "value": "http://localhost:5678",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Credit Simulation",
+      "item": [
+        {
+          "name": "Simulation - Success (Good Credit Profile)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USR001\",\n  \"amount\": 10000000,\n  \"termMonths\": 24,\n  \"monthlyIncome\": 5000000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "✅ Usuario con buen perfil crediticio (ingresos altos, monto razonable, plazo adecuado)\n\nEspera recibir:\n- success: true\n- 3 ofertas aprobadas de todos los bancos\n- bestOffer con la mejor opción\n- savings mostrando cuánto ahorra vs segunda mejor oferta"
+          },
+          "response": []
+        },
+        {
+          "name": "Simulation - Rejected (Low Income)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USR002\",\n  \"amount\": 15000000,\n  \"termMonths\": 12,\n  \"monthlyIncome\": 2000000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "❌ Usuario con bajo perfil crediticio (bajos ingresos para monto alto)\n\nEspera recibir:\n- success: false\n- message: 'Simulation rejected due to credit policies'\n- allOffers con razones de rechazo de cada banco\n- policyRejected: true\n- codCausal con código de causal de rechazo"
+          },
+          "response": []
+        },
+        {
+          "name": "Simulation - Invalid Amount (Too Low)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USR003\",\n  \"amount\": 500000,\n  \"termMonths\": 24,\n  \"monthlyIncome\": 3000000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "⚠️ Validación del Gateway - Monto fuera de rango (< 1M)\n\nEspera recibir:\n- success: false\n- message: 'Invalid request parameters'\n- reason: 'Amount out of range (1M - 50M)'\n\nNota: Esta validación ocurre ANTES de llamar a n8n"
+          },
+          "response": []
+        },
+        {
+          "name": "Simulation - Invalid Amount (Too High)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USR004\",\n  \"amount\": 60000000,\n  \"termMonths\": 24,\n  \"monthlyIncome\": 10000000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "⚠️ Validación del Gateway - Monto fuera de rango (> 50M)\n\nEspera recibir:\n- success: false\n- reason: 'Amount out of range (1M - 50M)'"
+          },
+          "response": []
+        },
+        {
+          "name": "Simulation - Invalid Term (Too Short)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USR005\",\n  \"amount\": 10000000,\n  \"termMonths\": 3,\n  \"monthlyIncome\": 5000000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "⚠️ Validación del Gateway - Plazo fuera de rango (< 6 meses)\n\nEspera recibir:\n- success: false\n- reason: 'Term out of range (6-60 months)'"
+          },
+          "response": []
+        },
+        {
+          "name": "Simulation - Invalid Term (Too Long)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USR006\",\n  \"amount\": 10000000,\n  \"termMonths\": 72,\n  \"monthlyIncome\": 5000000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "⚠️ Validación del Gateway - Plazo fuera de rango (> 60 meses)\n\nEspera recibir:\n- success: false\n- reason: 'Term out of range (6-60 months)'"
+          },
+          "response": []
+        },
+        {
+          "name": "Simulation - Missing userId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 10000000,\n  \"termMonths\": 24,\n  \"monthlyIncome\": 5000000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "⚠️ Validación del Gateway - Campo requerido faltante\n\nEspera recibir:\n- success: false\n- reason: 'userId is required'"
+          },
+          "response": []
+        },
+        {
+          "name": "Simulation - Medium Income Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USR007\",\n  \"amount\": 5000000,\n  \"termMonths\": 36,\n  \"monthlyIncome\": 3500000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "✅ Usuario con perfil medio (ingresos medios, monto bajo, plazo largo)\n\nEspera recibir ofertas aprobadas de algunos bancos, pero posiblemente rechazadas por otros debido a políticas más estrictas."
+          },
+          "response": []
+        },
+        {
+          "name": "Simulation - High Amount Short Term",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"USR008\",\n  \"amount\": 40000000,\n  \"termMonths\": 12,\n  \"monthlyIncome\": 15000000\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/simulation",
+              "host": ["{{gateway_url}}"],
+              "path": ["api", "simulation"]
+            },
+            "description": "✅ Usuario con muy altos ingresos solicitando monto alto a corto plazo\n\nEspera recibir ofertas pero con cuotas mensuales muy altas. Ideal para comparar totalCost entre bancos."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Gateway Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/actuator/health",
+              "host": ["{{gateway_url}}"],
+              "path": ["actuator", "health"]
+            },
+            "description": "Verifica el estado del Gateway"
+          },
+          "response": []
+        },
+        {
+          "name": "Gateway Circuit Breakers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/actuator/circuitbreakers",
+              "host": ["{{gateway_url}}"],
+              "path": ["actuator", "circuitbreakers"]
+            },
+            "description": "Verifica el estado de los Circuit Breakers de Resilience4j"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
