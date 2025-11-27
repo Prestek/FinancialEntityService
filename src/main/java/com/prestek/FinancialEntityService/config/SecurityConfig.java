@@ -1,4 +1,4 @@
-package com.prestek.FinancialEntityService;
+package com.prestek.FinancialEntityService.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

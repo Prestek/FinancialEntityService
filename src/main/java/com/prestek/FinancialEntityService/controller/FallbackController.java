@@ -1,4 +1,4 @@
-package com.prestek.FinancialEntityService;
+package com.prestek.FinancialEntityService.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
