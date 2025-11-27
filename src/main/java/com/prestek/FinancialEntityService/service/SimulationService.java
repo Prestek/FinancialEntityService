@@ -16,7 +16,7 @@ public class SimulationService {
 
     private final WebClient.Builder webClientBuilder;
 
-    @Value("${n8n.webhook.simulation-url:http://localhost:5678/webhook/credit-simulation}")
+    @Value("${N8N_SIMULATION_URL:http://localhost:5678/webhook/credit-simulation}")
     private String n8nSimulationUrl;
 
     /**

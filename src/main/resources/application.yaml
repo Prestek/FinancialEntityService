@@ -12,7 +12,7 @@ spring:
         webflux:
           routes:
             - id: coltefinanciera-service
-              uri: http://localhost:8081
+              uri: ${COLTEFINANCIERA_SERVICE_URL:http://localhost:8081}
               predicates:
                 - Path=/api/**
                 - Header=X-Bank-Code, COLT
@@ -23,7 +23,7 @@ spring:
                     fallbackUri: forward:/fallback/coltefinanciera
 
             - id: davivienda-service
-              uri: http://localhost:8082
+              uri: ${DAVIVIENDA_SERVICE_URL:http://localhost:8082}
               predicates:
                 - Path=/api/**
                 - Header=X-Bank-Code, DAVI
@@ -34,7 +34,7 @@ spring:
                     fallbackUri: forward:/fallback/davivienda
 
             - id: bancolombia-service
-              uri: http://localhost:8083
+              uri: ${BANCOLOMBIA_SERVICE_URL:http://localhost:8083}
               predicates:
                 - Path=/api/**
                 - Header=X-Bank-Code, BCO
@@ -101,7 +101,3 @@ resilience4j:
         registerHealthIndicator: true
       bancolombiaCB:
         registerHealthIndicator: true
-
-n8n:
-  webhook:
-    simulation-url: ${N8N_SIMULATION_URL:http://localhost:5678/webhook/credit-simulation}
