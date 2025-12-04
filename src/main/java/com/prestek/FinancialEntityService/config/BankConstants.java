@@ -6,9 +6,15 @@ public final class BankConstants {
     }
 
     public enum BankService {
-        BANCOLOMBIA("http://localhost:8083", "Authorization", "Bancolombia", "BCO"),
-        DAVIVIENDA("http://localhost:8082", "Authorization", "Davivienda", "DAVI"),
-        COLTEFINANCIERA("http://localhost:8081", "Authorization", "Coltefinanciera", "COLT");
+        BANCOLOMBIA(
+                System.getProperty("BANCOLOMBIA_SERVICE_URL", "http://localhost:8083"),
+                "Authorization", "Bancolombia", "BCO"),
+        DAVIVIENDA(
+                System.getProperty("DAVIVIENDA_SERVICE_URL", "http://localhost:8082"),
+                "Authorization", "Davivienda", "DAVI"),
+        COLTEFINANCIERA(
+                System.getProperty("COLTEFINANCIERA_SERVICE_URL", "http://localhost:8081"),
+                "Authorization", "Coltefinanciera", "COLT");
 
         private final String baseUrl;
         private final String authHeader;

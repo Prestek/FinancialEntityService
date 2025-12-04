@@ -16,7 +16,7 @@ public class SimulationService {
 
     private final WebClient.Builder webClientBuilder;
 
-    @Value("${N8N_SIMULATION_URL:http://localhost:5678/webhook/credit-simulation}")
+    @Value("${N8N_SIMULATION_URL:http://localhost:5678/webhook-test/simulate-credit}")
     private String n8nSimulationUrl;
 
     /**
@@ -26,45 +26,81 @@ public class SimulationService {
      * 3. Valida políticas de cada banco
      * 4. Llama a quotes de cada banco
      * 5. Compara ofertas y retorna las mejores
+     * 
+     * @param request             Datos de la simulación
+     * @param authorizationHeader JWT token en formato "Bearer {token}"
+     * @return Respuesta con las ofertas de los bancos
      */
-    public Mono<SimulationResponse> simulateLoan(SimulationRequest request) {
+    public Mono<SimulationResponse> simulateLoan(SimulationRequest request, String authorizationHeader) {
 
         // Validación básica
         if (!validateRequest(request)) {
+            String validationError = getValidationError(request);
+            log.warn("❌ Validation failed for user {}: {}", request.getUserId(), validationError);
             return Mono.just(SimulationResponse.builder()
                     .success(false)
                     .message("Invalid request parameters")
-                    .reason(getValidationError(request))
+                    .reason(validationError)
                     .build());
         }
 
-        log.info("Sending simulation request to n8n for user: {}", request.getUserId());
+        log.info("📤 Sending simulation request to N8N");
+        log.info("   URL: {}", n8nSimulationUrl);
+        log.info("   User: {}", request.getUserId());
+        log.info("   Amount: ${}", String.format("%,.0f", request.getAmount()));
+        log.info("   Term: {} months", request.getTermMonths());
+        log.info("   Income: ${}", String.format("%,.0f", request.getMonthlyIncome()));
+        log.info("   Authorization: {}", authorizationHeader != null ? "Present" : "Missing");
+        log.info("   Request body: userId={}, amount={}, termMonths={}, monthlyIncome={}",
+                request.getUserId(), request.getAmount(), request.getTermMonths(), request.getMonthlyIncome());
+
+        // Validar que el token esté presente
+        if (authorizationHeader == null || authorizationHeader.isBlank()) {
+            log.error("❌ Authorization header is required");
+            return Mono.just(SimulationResponse.builder()
+                    .success(false)
+                    .message("Unauthorized")
+                    .reason("Authorization token is required")
+                    .build());
+        }
 
         // Enviar a n8n para procesamiento completo
         return webClientBuilder.build()
                 .post()
                 .uri(n8nSimulationUrl)
+                .header("Authorization", authorizationHeader)
                 .bodyValue(request)
                 .retrieve()
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        clientResponse -> clientResponse.bodyToMono(String.class)
+                                .flatMap(errorBody -> {
+                                    log.error("❌ N8N returned error status {}: {}",
+                                            clientResponse.statusCode(), errorBody);
+                                    return Mono.error(new RuntimeException(
+                                            "N8N error: " + clientResponse.statusCode() + " - " + errorBody));
+                                }))
                 .bodyToMono(SimulationResponse.class)
                 .doOnSuccess(response -> {
-                    if (response.getSuccess()) {
-                        log.info("Simulation successful for user {}: {} offers, best from {}",
+                    if (response != null && response.getSuccess() != null && response.getSuccess()) {
+                        log.info("✅ Simulation successful for user {}: {} offers, best from {}",
                                 request.getUserId(),
                                 response.getOffersCount(),
                                 response.getBestOffer() != null ? response.getBestOffer().getEntity() : "none");
                     } else {
-                        log.warn("Simulation rejected for user {}: {}",
+                        log.warn("⚠️  Simulation rejected for user {}: {}",
                                 request.getUserId(),
-                                response.getMessage());
+                                response != null ? response.getMessage() : "null response");
                     }
                 })
                 .onErrorResume(error -> {
-                    log.error("Error calling n8n simulation webhook: {}", error.getMessage());
+                    log.error("❌ Error calling N8N simulation webhook");
+                    log.error("   URL: {}", n8nSimulationUrl);
+                    log.error("   Error: {} - {}", error.getClass().getSimpleName(), error.getMessage());
                     return Mono.just(SimulationResponse.builder()
                             .success(false)
                             .message("Service temporarily unavailable")
-                            .reason("Unable to process simulation request")
+                            .reason("Unable to process simulation request: " + error.getMessage())
                             .build());
                 });
     }

@@ -15,7 +15,10 @@ public class SimulationController {
     private final SimulationService simulationService;
 
     @PostMapping
-    public Mono<SimulationResponse> simulateLoan(@RequestBody SimulationRequest request) {
-        return simulationService.simulateLoan(request);
+    public Mono<SimulationResponse> simulateLoan(
+            @RequestBody SimulationRequest request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        System.out.println("Authorization Header: " + authorizationHeader);
+        return simulationService.simulateLoan(request, authorizationHeader);
     }
 }

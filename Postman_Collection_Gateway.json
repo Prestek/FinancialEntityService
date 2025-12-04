@@ -1,0 +1,1079 @@
+{
+	"info": {
+		"_postman_id": "gateway-financial-entity-collection",
+		"name": "Financial Entity Gateway - Complete Collection",
+		"description": "Colección completa para probar todos los endpoints del Gateway de Entidades Financieras.\n\nEl Gateway enruta peticiones a 3 bancos usando el header X-Bank-Code:\n- BCO = Bancolombia\n- DAVI = Davivienda\n- COLT = Coltefinanciera",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Bancolombia (BCO)",
+			"item": [
+				{
+					"name": "1. Get All Applications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "BCO",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications"
+							]
+						},
+						"description": "Obtiene todas las solicitudes de crédito de Bancolombia"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Application by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "BCO",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1"
+							]
+						},
+						"description": "Obtiene una solicitud específica por ID en Bancolombia"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Applications by User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "BCO",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/user/{{test_user_id}}",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"user",
+								"{{test_user_id}}"
+							]
+						},
+						"description": "Obtiene todas las solicitudes de un usuario en Bancolombia"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Get Applications by Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "BCO",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/status/PENDING",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"status",
+								"PENDING"
+							]
+						},
+						"description": "Obtiene solicitudes por estado: PENDING, APPROVED, REJECTED, WITHDRAWN"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Create Application",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "BCO",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"amount\": 20000000\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/applications",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications"
+							]
+						},
+						"description": "Crea una nueva solicitud de crédito en Bancolombia"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Update Application Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "BCO",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"APPROVED\",\n  \"notes\": \"Application approved after review\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1/status",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1",
+								"status"
+							]
+						},
+						"description": "Actualiza el estado de una solicitud en Bancolombia"
+					},
+					"response": []
+				},
+				{
+					"name": "7. Get User Application Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "BCO",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/user/{{test_user_id}}/count",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"user",
+								"{{test_user_id}}",
+								"count"
+							]
+						},
+						"description": "Obtiene el número de solicitudes de un usuario en Bancolombia"
+					},
+					"response": []
+				},
+				{
+					"name": "8. Delete Application",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "BCO",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1"
+							]
+						},
+						"description": "Elimina una solicitud en Bancolombia"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para interactuar con Bancolombia a través del Gateway"
+		},
+		{
+			"name": "Davivienda (DAVI)",
+			"item": [
+				{
+					"name": "1. Get All Applications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "DAVI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications"
+							]
+						},
+						"description": "Obtiene todas las solicitudes de crédito de Davivienda"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Application by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "DAVI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1"
+							]
+						},
+						"description": "Obtiene una solicitud específica por ID en Davivienda"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Applications by User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "DAVI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/user/{{test_user_id}}",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"user",
+								"{{test_user_id}}"
+							]
+						},
+						"description": "Obtiene todas las solicitudes de un usuario en Davivienda"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Get Applications by Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "DAVI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/status/APPROVED",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"status",
+								"APPROVED"
+							]
+						},
+						"description": "Obtiene solicitudes por estado en Davivienda"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Create Application",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "DAVI",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"amount\": 15000000\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/applications",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications"
+							]
+						},
+						"description": "Crea una nueva solicitud de crédito en Davivienda"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Update Application Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "DAVI",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"REJECTED\",\n  \"notes\": \"Insufficient income\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1/status",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1",
+								"status"
+							]
+						},
+						"description": "Actualiza el estado de una solicitud en Davivienda"
+					},
+					"response": []
+				},
+				{
+					"name": "7. Get User Application Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "DAVI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/user/{{test_user_id}}/count",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"user",
+								"{{test_user_id}}",
+								"count"
+							]
+						},
+						"description": "Obtiene el número de solicitudes de un usuario en Davivienda"
+					},
+					"response": []
+				},
+				{
+					"name": "8. Delete Application",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "DAVI",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1"
+							]
+						},
+						"description": "Elimina una solicitud en Davivienda"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para interactuar con Davivienda a través del Gateway"
+		},
+		{
+			"name": "Coltefinanciera (COLT)",
+			"item": [
+				{
+					"name": "1. Get All Applications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "COLT",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications"
+							]
+						},
+						"description": "Obtiene todas las solicitudes de crédito de Coltefinanciera"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Application by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "COLT",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1"
+							]
+						},
+						"description": "Obtiene una solicitud específica por ID en Coltefinanciera"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Applications by User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "COLT",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/user/{{test_user_id}}",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"user",
+								"{{test_user_id}}"
+							]
+						},
+						"description": "Obtiene todas las solicitudes de un usuario en Coltefinanciera"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Get Applications by Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "COLT",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/status/WITHDRAWN",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"status",
+								"WITHDRAWN"
+							]
+						},
+						"description": "Obtiene solicitudes por estado en Coltefinanciera"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Create Application",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "COLT",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"amount\": 10000000\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/applications",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications"
+							]
+						},
+						"description": "Crea una nueva solicitud de crédito en Coltefinanciera"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Update Application Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "COLT",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"WITHDRAWN\",\n  \"notes\": \"Customer requested withdrawal\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1/status",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1",
+								"status"
+							]
+						},
+						"description": "Actualiza el estado de una solicitud en Coltefinanciera"
+					},
+					"response": []
+				},
+				{
+					"name": "7. Get User Application Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "COLT",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/user/{{test_user_id}}/count",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"user",
+								"{{test_user_id}}",
+								"count"
+							]
+						},
+						"description": "Obtiene el número de solicitudes de un usuario en Coltefinanciera"
+					},
+					"response": []
+				},
+				{
+					"name": "8. Delete Application",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Bank-Code",
+								"value": "COLT",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/1",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"1"
+							]
+						},
+						"description": "Elimina una solicitud en Coltefinanciera"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para interactuar con Coltefinanciera a través del Gateway"
+		},
+		{
+			"name": "Gateway - Servicios Especiales",
+			"item": [
+				{
+					"name": "Simulate Credit (N8N)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"amount\": 20000000,\n  \"termMonths\": 48,\n  \"monthlyIncome\": 5000000\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/simulation",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"simulation"
+							]
+						},
+						"description": "Simula un crédito consultando políticas de todos los bancos y obteniendo la mejor oferta. Este endpoint se conecta a N8N que orquesta todo el proceso."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Aggregated User Applications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/applications/user/{{test_user_id}}",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"applications",
+								"user",
+								"{{test_user_id}}"
+							]
+						},
+						"description": "Obtiene todas las solicitudes de un usuario en TODOS los bancos (sin necesidad de X-Bank-Code). Retorna un array agregado de todas las solicitudes."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints especiales del Gateway que no requieren X-Bank-Code o que realizan operaciones multi-banco"
+		},
+		{
+			"name": "Health & Monitoring",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/actuator/health",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "Verifica el estado del Gateway y los Circuit Breakers"
+					},
+					"response": []
+				},
+				{
+					"name": "Circuit Breakers Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/actuator/circuitbreakers",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"actuator",
+								"circuitbreakers"
+							]
+						},
+						"description": "Obtiene el estado detallado de todos los Circuit Breakers configurados"
+					},
+					"response": []
+				},
+				{
+					"name": "Metrics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/actuator/metrics",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"actuator",
+								"metrics"
+							]
+						},
+						"description": "Obtiene métricas generales del Gateway"
+					},
+					"response": []
+				},
+				{
+					"name": "Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/actuator/info",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"actuator",
+								"info"
+							]
+						},
+						"description": "Información general del Gateway"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints de monitoreo y health checks del Gateway"
+		},
+		{
+			"name": "Testing Scenarios",
+			"item": [
+				{
+					"name": "Complete Flow - Create in All Banks",
+					"item": [
+						{
+							"name": "Step 1 - Create in Bancolombia",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Bank-Code",
+										"value": "BCO",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"amount\": 20000000\n}"
+								},
+								"url": {
+									"raw": "{{gateway_url}}/api/applications",
+									"host": [
+										"{{gateway_url}}"
+									],
+									"path": [
+										"api",
+										"applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 2 - Create in Davivienda",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Bank-Code",
+										"value": "DAVI",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"amount\": 15000000\n}"
+								},
+								"url": {
+									"raw": "{{gateway_url}}/api/applications",
+									"host": [
+										"{{gateway_url}}"
+									],
+									"path": [
+										"api",
+										"applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 3 - Create in Coltefinanciera",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Bank-Code",
+										"value": "COLT",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"amount\": 10000000\n}"
+								},
+								"url": {
+									"raw": "{{gateway_url}}/api/applications",
+									"host": [
+										"{{gateway_url}}"
+									],
+									"path": [
+										"api",
+										"applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 4 - Get Aggregated Applications",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{gateway_url}}/api/applications/user/{{test_user_id}}",
+									"host": [
+										"{{gateway_url}}"
+									],
+									"path": [
+										"api",
+										"applications",
+										"user",
+										"{{test_user_id}}"
+									]
+								},
+								"description": "Verifica que se obtienen las 3 solicitudes creadas"
+							},
+							"response": []
+						}
+					],
+					"description": "Flujo completo: crear solicitud en cada banco y luego obtener todas agregadas"
+				},
+				{
+					"name": "Circuit Breaker Test - Force Failures",
+					"item": [
+						{
+							"name": "Try Invalid Bank Code (Should Fail)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Bank-Code",
+										"value": "INVALID",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{gateway_url}}/api/applications",
+									"host": [
+										"{{gateway_url}}"
+									],
+									"path": [
+										"api",
+										"applications"
+									]
+								},
+								"description": "Debería retornar 404 - No route found"
+							},
+							"response": []
+						},
+						{
+							"name": "Request Without X-Bank-Code (Should Fail)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{gateway_url}}/api/applications",
+									"host": [
+										"{{gateway_url}}"
+									],
+									"path": [
+										"api",
+										"applications"
+									]
+								},
+								"description": "Debería retornar 400 - Required header missing"
+							},
+							"response": []
+						}
+					],
+					"description": "Pruebas para validar manejo de errores y Circuit Breaker"
+				}
+			],
+			"description": "Escenarios de prueba completos para validar funcionalidad end-to-end"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "gateway_url",
+			"value": "http://localhost:8090",
+			"type": "string"
+		},
+		{
+			"key": "test_user_id",
+			"value": "USR001",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
