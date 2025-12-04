@@ -1,6 +1,5 @@
 package com.prestek.FinancialEntityService.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SimulationResponse {
-    @JsonProperty("analysis")
-    private BankComparisonDto analysis;
-
-    private RecommendationDto recommendation;
+public class RecommendationDto {
+    private String bestOption;
+    private String reason;
+    private String riskAssessment;
+    private String summary;
 }

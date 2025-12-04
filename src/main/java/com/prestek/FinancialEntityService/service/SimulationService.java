@@ -37,11 +37,7 @@ public class SimulationService {
         if (!validateRequest(request)) {
             String validationError = getValidationError(request);
             log.warn("❌ Validation failed for user {}: {}", request.getUserId(), validationError);
-            return Mono.just(SimulationResponse.builder()
-                    .success(false)
-                    .message("Invalid request parameters")
-                    .reason(validationError)
-                    .build());
+            return Mono.error(new IllegalArgumentException(validationError));
         }
 
         log.info("📤 Sending simulation request to N8N");
@@ -51,17 +47,11 @@ public class SimulationService {
         log.info("   Term: {} months", request.getTermMonths());
         log.info("   Income: ${}", String.format("%,.0f", request.getMonthlyIncome()));
         log.info("   Authorization: {}", authorizationHeader != null ? "Present" : "Missing");
-        log.info("   Request body: userId={}, amount={}, termMonths={}, monthlyIncome={}",
-                request.getUserId(), request.getAmount(), request.getTermMonths(), request.getMonthlyIncome());
 
         // Validar que el token esté presente
         if (authorizationHeader == null || authorizationHeader.isBlank()) {
             log.error("❌ Authorization header is required");
-            return Mono.just(SimulationResponse.builder()
-                    .success(false)
-                    .message("Unauthorized")
-                    .reason("Authorization token is required")
-                    .build());
+            return Mono.error(new IllegalArgumentException("Authorization token is required"));
         }
 
         // Enviar a n8n para procesamiento completo
@@ -82,26 +72,26 @@ public class SimulationService {
                                 }))
                 .bodyToMono(SimulationResponse.class)
                 .doOnSuccess(response -> {
-                    if (response != null && response.getSuccess() != null && response.getSuccess()) {
-                        log.info("✅ Simulation successful for user {}: {} offers, best from {}",
-                                request.getUserId(),
-                                response.getOffersCount(),
-                                response.getBestOffer() != null ? response.getBestOffer().getEntity() : "none");
+                    if (response != null && response.getRecommendation() != null) {
+                        String bestBank = response.getRecommendation().getBestOption();
+                        String riskLevel = response.getRecommendation().getRiskAssessment();
+
+                        log.info("✅ Simulation successful for user {}:", request.getUserId());
+                        log.info("   Best option: {}", bestBank);
+                        log.info("   Risk assessment: {}", riskLevel);
+
+                        if (response.getAnalysis() != null) {
+                            log.info("   Banks analyzed: Bancolombia, Coltefinanciera, Davivienda");
+                        }
                     } else {
-                        log.warn("⚠️  Simulation rejected for user {}: {}",
-                                request.getUserId(),
-                                response != null ? response.getMessage() : "null response");
+                        log.warn("⚠️  Simulation returned null response for user {}", request.getUserId());
                     }
                 })
                 .onErrorResume(error -> {
                     log.error("❌ Error calling N8N simulation webhook");
                     log.error("   URL: {}", n8nSimulationUrl);
                     log.error("   Error: {} - {}", error.getClass().getSimpleName(), error.getMessage());
-                    return Mono.just(SimulationResponse.builder()
-                            .success(false)
-                            .message("Service temporarily unavailable")
-                            .reason("Unable to process simulation request: " + error.getMessage())
-                            .build());
+                    return Mono.error(error);
                 });
     }
 
