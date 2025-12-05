@@ -1062,7 +1062,7 @@
 	"variable": [
 		{
 			"key": "gateway_url",
-			"value": "http://localhost:8090",
+			"value": "http://localhost:8080",
 			"type": "string"
 		},
 		{

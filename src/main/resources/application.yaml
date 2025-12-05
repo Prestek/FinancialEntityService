@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 8080
 
 spring:
   autoconfigure:
@@ -44,7 +44,7 @@ spring:
 
         # Fallbacks
         - id: fallback-coltefinanciera
-          uri: http://localhost:8090
+          uri: http://localhost:8080
           predicates:
             - Path=/fallback/coltefinanciera
           filters:
@@ -52,7 +52,7 @@ spring:
             - RewritePath=/fallback/coltefinanciera, /fallback
 
         - id: fallback-davivienda
-          uri: http://localhost:8090
+          uri: http://localhost:8080
           predicates:
             - Path=/fallback/davivienda
           filters:
@@ -60,7 +60,7 @@ spring:
             - RewritePath=/fallback/davivienda, /fallback
 
         - id: fallback-bancolombia
-          uri: http://localhost:8090
+          uri: http://localhost:8080
           predicates:
             - Path=/fallback/bancolombia
           filters:
