@@ -19,9 +19,9 @@ mvn spring-boot:run "-Dspring-boot.run.profiles=test"
 
 **Acceso:**
 
-- Gateway: http://localhost:8090
-- Health: http://localhost:8090/actuator/health
-- Circuit Breakers: http://localhost:8090/actuator/circuitbreakers
+- Gateway: http://localhost:8080
+- Health: http://localhost:8080/actuator/health
+- Circuit Breakers: http://localhost:8080/actuator/circuitbreakers
 
 ---
 
@@ -83,7 +83,7 @@ java -jar target/FinancialEntityService-0.0.1-SNAPSHOT.jar --spring.profiles.act
 
 ```yaml
 server:
-  port: 8090
+  port: 8080
 
 resilience4j:
   circuitbreaker:
@@ -138,7 +138,7 @@ docker build -t financial-gateway:latest .
 ### Ejecutar contenedor
 
 ```bash
-docker run -p 8090:8090 \
+docker run -p 8080:8080 \
   -e N8N_SIMULATION_URL=https://n8n-server.com/webhook/credit-simulation \
   financial-gateway:latest
 ```

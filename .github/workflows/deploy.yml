@@ -1,0 +1,24 @@
+name: Deploy Release
+
+on:
+  push:
+    branches:
+      - dev 
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: Prestek/central-pipelines/.github/workflows/deploy.yml@V0.0.3
+    with:
+      PROJECT_NAME: "FinancialEntityService"       # Nombre de la carpeta/proyecto en la instancia EC2
+      IMAGE_NAME: "financial-entity-service"                  # Nombre de la imagen Docker
+      CONTAINER_NAME: "financial-entity-service"              # Nombre del contenedor Docker
+      PORT: "8080"                        # Puerto en el que se expondrá el contenedor
+      REPO_URL: "https://github.com/Prestek/FinancialEntityService.git"  # URL del repositorio a desplegar
+      BRANCH: "dev"    
+      AWS_REGION: "us-east-1"                  
+    secrets:
+      EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY2 }}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_USER: ${{ secrets.EC2_USER }}
+      AWS_SECRET_ARN: ${{ secrets.AWS_SECRET_ARN }}
