@@ -130,6 +130,9 @@ public class SimulationService {
         if (request.getMonthlyIncome() == null) {
             return "monthlyIncome is required";
         }
+        if (request.getMonthlyIncome() <= 0) {
+            return "monthlyIncome must be greater than zero";
+        }
         return "Invalid request";
     }
 }

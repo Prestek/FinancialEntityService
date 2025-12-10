@@ -43,18 +43,37 @@ public class BankAggregationService {
         String url = bank.buildUri(relativePath);
 
         logger.info("📞 Fetching from {}: {}", bank.bankName(), url);
+        logger.debug("   JWT Token: {}",
+                jwtToken != null ? jwtToken.substring(0, Math.min(20, jwtToken.length())) + "..." : "NULL");
 
         return webClient.get()
                 .uri(url)
-                // propagate JWT to the bank
-                .header(bank.authHeader(), jwtToken)
+                .header(bank.authHeader(), jwtToken != null ? jwtToken : "")
                 .retrieve()
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        clientResponse -> {
+                            int statusCode = clientResponse.statusCode().value();
+                            return clientResponse.bodyToMono(String.class)
+                                    .defaultIfEmpty("No error body")
+                                    .flatMap(errorBody -> {
+                                        logger.error("❌ {} returned {} - Error body: {}",
+                                                bank.bankName(), statusCode, errorBody);
+                                        return Mono.error(new RuntimeException(
+                                                String.format("%s failed with %d: %s",
+                                                        bank.bankName(), statusCode, errorBody)));
+                                    });
+                        })
                 .bodyToFlux(ApplicationDto.class)
                 .map(app -> BankApplicationDto.from(app, bank.bankName(), bank.bankCode()))
                 .collectList()
                 .doOnSuccess(apps -> logger.info("✓ {} returned {} applications", bank.bankName(), apps.size()))
                 .onErrorResume(error -> {
-                    logger.warn("⚠️  {} failed: {}", bank.bankName(), error.getMessage());
+                    logger.error("⚠️  {} completely failed - Error type: {} - Message: {}",
+                            bank.bankName(),
+                            error.getClass().getSimpleName(),
+                            error.getMessage());
+                    logger.error("   Stack trace: ", error);
                     return Mono.just(Collections.emptyList());
                 });
     }

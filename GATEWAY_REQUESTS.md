@@ -1,10 +1,10 @@
 # Guía de Solicitudes a través del Gateway
 
-Este documento muestra cómo hacer peticiones a los diferentes bancos a través del **Financial Entity Gateway** (puerto 8090).
+Este documento muestra cómo hacer peticiones a los diferentes bancos a través del **Financial Entity Gateway** (puerto 8080).
 
 ## 🔧 Configuración
 
-**Gateway URL**: `http://localhost:8090` (desarrollo) o tu URL de producción
+**Gateway URL**: `http://localhost:8080` (desarrollo) o tu URL de producción
 
 ### Headers Requeridos
 
@@ -28,7 +28,7 @@ X-Bank-Code: BCO
 **Ejemplo con curl:**
 
 ```bash
-curl -X GET http://localhost:8090/api/applications \
+curl -X GET http://localhost:8080/api/applications \
   -H "X-Bank-Code: BCO"
 ```
 
@@ -44,7 +44,7 @@ X-Bank-Code: DAVI
 **Ejemplo:**
 
 ```bash
-curl -X GET http://localhost:8090/api/applications/1 \
+curl -X GET http://localhost:8080/api/applications/1 \
   -H "X-Bank-Code: DAVI"
 ```
 
@@ -60,7 +60,7 @@ X-Bank-Code: COLT
 **Ejemplo:**
 
 ```bash
-curl -X GET http://localhost:8090/api/applications/user/USR001 \
+curl -X GET http://localhost:8080/api/applications/user/USR001 \
   -H "X-Bank-Code: COLT"
 ```
 
@@ -78,7 +78,7 @@ X-Bank-Code: BCO
 **Ejemplo:**
 
 ```bash
-curl -X GET http://localhost:8090/api/applications/status/PENDING \
+curl -X GET http://localhost:8080/api/applications/status/PENDING \
   -H "X-Bank-Code: BCO"
 ```
 
@@ -100,7 +100,7 @@ Content-Type: application/json
 **Ejemplo con curl:**
 
 ```bash
-curl -X POST http://localhost:8090/api/applications \
+curl -X POST http://localhost:8080/api/applications \
   -H "X-Bank-Code: DAVI" \
   -H "Content-Type: application/json" \
   -d '{
@@ -127,7 +127,7 @@ Content-Type: application/json
 **Ejemplo:**
 
 ```bash
-curl -X PATCH http://localhost:8090/api/applications/1/status \
+curl -X PATCH http://localhost:8080/api/applications/1/status \
   -H "X-Bank-Code: BCO" \
   -H "Content-Type: application/json" \
   -d '{
@@ -148,7 +148,7 @@ X-Bank-Code: COLT
 **Ejemplo:**
 
 ```bash
-curl -X GET http://localhost:8090/api/applications/user/USR001/count \
+curl -X GET http://localhost:8080/api/applications/user/USR001/count \
   -H "X-Bank-Code: COLT"
 ```
 
@@ -172,7 +172,7 @@ X-Bank-Code: DAVI
 **Ejemplo:**
 
 ```bash
-curl -X DELETE http://localhost:8090/api/applications/1 \
+curl -X DELETE http://localhost:8080/api/applications/1 \
   -H "X-Bank-Code: DAVI"
 ```
 
@@ -197,7 +197,7 @@ Content-Type: application/json
 **Ejemplo:**
 
 ```bash
-curl -X POST http://localhost:8090/api/simulation \
+curl -X POST http://localhost:8080/api/simulation \
   -H "Content-Type: application/json" \
   -d '{
     "userId": "USR001",
@@ -242,7 +242,7 @@ Este endpoint **NO requiere** `X-Bank-Code` porque consulta automáticamente los
 **Ejemplo:**
 
 ```bash
-curl -X GET http://localhost:8090/api/applications/user/USR001 \
+curl -X GET http://localhost:8080/api/applications/user/USR001 \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
@@ -277,7 +277,7 @@ curl -X GET http://localhost:8090/api/applications/user/USR001 \
 
 ```json
 {
-  "gateway_url": "http://localhost:8090",
+  "gateway_url": "http://localhost:8080",
   "bank_code_bancolombia": "BCO",
   "bank_code_davivienda": "DAVI",
   "bank_code_coltefinanciera": "COLT",
@@ -364,7 +364,7 @@ Si un banco no responde, el Gateway retorna:
 Verificar estado del Gateway y Circuit Breakers:
 
 ```bash
-curl http://localhost:8090/actuator/health
+curl http://localhost:8080/actuator/health
 ```
 
 **Respuesta:**
@@ -392,7 +392,7 @@ curl http://localhost:8090/actuator/health
 Consultar métricas de Circuit Breakers:
 
 ```bash
-curl http://localhost:8090/actuator/circuitbreakers
+curl http://localhost:8080/actuator/circuitbreakers
 ```
 
 ---
@@ -472,5 +472,5 @@ tail -f logs/gateway.log
 O consulta el actuator:
 
 ```bash
-curl http://localhost:8090/actuator/info
+curl http://localhost:8080/actuator/info
 ```
