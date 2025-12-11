@@ -171,6 +171,10 @@
 							<goal>report</goal>
 						</goals>
 						<configuration>
+							<formats>
+								<format>HTML</format>
+								<format>XML</format>
+							</formats>
 							<excludes>
 								<exclude>com/prestek/FinancialEntityService/config/**</exclude>
 								<exclude>com/prestek/FinancialEntityService/FinancialEntityServiceApplication.class</exclude>
